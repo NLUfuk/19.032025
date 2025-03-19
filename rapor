@@ -1,80 +1,47 @@
 from datetime import datetime, timedelta
+import random
 
 class Rapor:
     def __init__(self):
-        self.gunluk_giris_sayisi = 0
-        self.haftalik_giris_sayisi = 0
-        self.gunluk_uyelik_olusturma = 0
-        self.gunluk_uyelik_iptal = 0
-        self.haftalik_uyelik_olusturma = 0
-        self.haftalik_uyelik_iptal = 0
-        self.toplam_satis_miktari = 0
-        self.okul_gezi_gruplari = []
+        self.gunluk_veriler = []  # Günlük giriş verileri
+        self.satis_verileri = {"abonman": 0, "gunluk": 0, "nakit": 0, "kurumsal": 0}
+        self.toplam_gelir = 0
+        print(f"[{self.__class__.__name__}] Sınıfı Başlatıldı")
 
-    def giris_ekle(self):
-        self.gunluk_giris_sayisi += 1
-        self.haftalik_giris_sayisi += 1
-
-    def uyelik_olustur(self):
-        self.gunluk_uyelik_olusturma += 1
-        self.haftalik_uyelik_olusturma += 1
-
-    def uyelik_iptal(self):
-        self.gunluk_uyelik_iptal += 1
-        self.haftalik_uyelik_iptal += 1
-
-    def satis_ekle(self, miktar):
-        self.toplam_satis_miktari += miktar
-
-    def okul_gezi_ekle(self, okul_adi, kisi_sayisi):
-        self.okul_gezi_gruplari.append((okul_adi, kisi_sayisi))
+    def giris_kaydet(self, giris_tipi, kisi_sayisi, gelir):
+        print(f"[{self.__class__.__name__}.giris_kaydet()] Çağrıldı")
+        tarih = datetime.today().strftime("%Y-%m-%d")
+        self.gunluk_veriler.append({"tarih": tarih, "giris_tipi": giris_tipi, "kisi_sayisi": kisi_sayisi})
+        self.satis_verileri[giris_tipi] += kisi_sayisi
+        self.toplam_gelir += gelir
 
     def gunluk_rapor(self):
-        return (f"Günlük Rapor:\n"
-                f"Giriş Sayısı: {self.gunluk_giris_sayisi}\n"
-                f"Üyelik Oluşturma: {self.gunluk_uyelik_olusturma}\n"
-                f"Üyelik İptal: {self.gunluk_uyelik_iptal}\n"
-                f"Toplam Satış Miktarı: {self.toplam_satis_miktari} TL\n"
-                f"Okul/Kurumsal Gezi Grupları: {len(self.okul_gezi_gruplari)}")
+        print(f"[{self.__class__.__name__}.gunluk_rapor()] Çağrıldı")
+        tarih = datetime.today().strftime("%Y-%m-%d")
+        toplam_kisi = sum(item["kisi_sayisi"] for item in self.gunluk_veriler if item["tarih"] == tarih)
+        return (f"Tarih: {tarih}\n"
+                f"Günlük Giriş: {self.satis_verileri['gunluk']}\n"
+                f"Abonman Giriş: {self.satis_verileri['abonman']}\n"
+                f"Nakit Giriş: {self.satis_verileri['nakit']}\n"
+                f"Kurumsal Giriş: {self.satis_verileri['kurumsal']}\n"
+                f"Toplam Gelir: {self.toplam_gelir} TL\n"
+                f"Toplam Ziyaretçi: {toplam_kisi}")
 
     def haftalik_rapor(self):
-        return (f"Haftalık Rapor:\n"
-                f"Giriş Sayısı: {self.haftalik_giris_sayisi}\n"
-                f"Üyelik Oluşturma: {self.haftalik_uyelik_olusturma}\n"
-                f"Üyelik İptal: {self.haftalik_uyelik_iptal}\n"
-                f"Toplam Satış Miktarı: {self.toplam_satis_miktari} TL\n"
-                f"Okul/Kurumsal Gezi Grupları: {len(self.okul_gezi_gruplari)}")
-
-    def raporu_sifirla(self):
-        self.gunluk_giris_sayisi = 0
-        self.gunluk_uyelik_olusturma = 0
-        self.gunluk_uyelik_iptal = 0
-
-# Örnek Kullanım
-rapor = Rapor()
-
-# Girişler
-rapor.giris_ekle()
-rapor.giris_ekle()
-
-# Üyelik İşlemleri
-rapor.uyelik_olustur()
-rapor.uyelik_iptal()
-
-# Satışlar
-rapor.satis_ekle(500)
-rapor.satis_ekle(300)
-
-# Okul/Kurumsal Geziler
-rapor.okul_gezi_ekle("ABC Okulu", 30)
-rapor.okul_gezi_ekle("XYZ Şirketi", 15)
-
-# Raporları Görüntüle
-print(rapor.gunluk_rapor())
-print("\n")
-print(rapor.haftalik_rapor())
-
-# Günlük raporu sıfırla (gün sonu)
-rapor.raporu_sifirla()
-print("\nGünlük rapor sıfırlandı!")
-print(rapor.gunluk_rapor())
+        print(f"[{self.__class__.__name__}.haftalik_rapor()] Çağrıldı")
+        bugun = datetime.today()
+        hafta_baslangic = bugun - timedelta(days=bugun.weekday())
+        hafta_sonu = hafta_baslangic + timedelta(days=6)
+        hafta_ici_ziyaretler = {i: 0 for i in range(7)}
+        
+        for veri in self.gunluk_veriler:
+            tarih_obj = datetime.strptime(veri["tarih"], "%Y-%m-%d")
+            if hafta_baslangic <= tarih_obj <= hafta_sonu:
+                gun_index = tarih_obj.weekday()
+                hafta_ici_ziyaretler[gun_index] += veri["kisi_sayisi"]
+        
+        rapor = "Haftalık Yoğunluk:\n"
+        gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
+        for i in range(7):
+            rapor += f"{gunler[i]}: {hafta_ici_ziyaretler[i]} kişi\n"
+        return rapor
