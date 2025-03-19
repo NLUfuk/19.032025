@@ -11,7 +11,7 @@ class Giris:
 class AbonmanKart(Giris):
     def __init__(self, isim, yas, bitis_tarihi):
         super().__init__(isim, yas)
-        self.bitis_tarihi = datetime.strptime(bitis_tarihi, "%Y-%m-%d")
+        self.bitis_tarihi = datetime.strptime(bitis_tarihi, "%Y-%m-%D")
 
     def kart_dogrula(self):
         bugun = datetime.today()
