@@ -1,0 +1,80 @@
+from datetime import datetime, timedelta
+
+class Rapor:
+    def __init__(self):
+        self.gunluk_giris_sayisi = 0
+        self.haftalik_giris_sayisi = 0
+        self.gunluk_uyelik_olusturma = 0
+        self.gunluk_uyelik_iptal = 0
+        self.haftalik_uyelik_olusturma = 0
+        self.haftalik_uyelik_iptal = 0
+        self.toplam_satis_miktari = 0
+        self.okul_gezi_gruplari = []
+
+    def giris_ekle(self):
+        self.gunluk_giris_sayisi += 1
+        self.haftalik_giris_sayisi += 1
+
+    def uyelik_olustur(self):
+        self.gunluk_uyelik_olusturma += 1
+        self.haftalik_uyelik_olusturma += 1
+
+    def uyelik_iptal(self):
+        self.gunluk_uyelik_iptal += 1
+        self.haftalik_uyelik_iptal += 1
+
+    def satis_ekle(self, miktar):
+        self.toplam_satis_miktari += miktar
+
+    def okul_gezi_ekle(self, okul_adi, kisi_sayisi):
+        self.okul_gezi_gruplari.append((okul_adi, kisi_sayisi))
+
+    def gunluk_rapor(self):
+        return (f"Günlük Rapor:\n"
+                f"Giriş Sayısı: {self.gunluk_giris_sayisi}\n"
+                f"Üyelik Oluşturma: {self.gunluk_uyelik_olusturma}\n"
+                f"Üyelik İptal: {self.gunluk_uyelik_iptal}\n"
+                f"Toplam Satış Miktarı: {self.toplam_satis_miktari} TL\n"
+                f"Okul/Kurumsal Gezi Grupları: {len(self.okul_gezi_gruplari)}")
+
+    def haftalik_rapor(self):
+        return (f"Haftalık Rapor:\n"
+                f"Giriş Sayısı: {self.haftalik_giris_sayisi}\n"
+                f"Üyelik Oluşturma: {self.haftalik_uyelik_olusturma}\n"
+                f"Üyelik İptal: {self.haftalik_uyelik_iptal}\n"
+                f"Toplam Satış Miktarı: {self.toplam_satis_miktari} TL\n"
+                f"Okul/Kurumsal Gezi Grupları: {len(self.okul_gezi_gruplari)}")
+
+    def raporu_sifirla(self):
+        self.gunluk_giris_sayisi = 0
+        self.gunluk_uyelik_olusturma = 0
+        self.gunluk_uyelik_iptal = 0
+
+# Örnek Kullanım
+rapor = Rapor()
+
+# Girişler
+rapor.giris_ekle()
+rapor.giris_ekle()
+
+# Üyelik İşlemleri
+rapor.uyelik_olustur()
+rapor.uyelik_iptal()
+
+# Satışlar
+rapor.satis_ekle(500)
+rapor.satis_ekle(300)
+
+# Okul/Kurumsal Geziler
+rapor.okul_gezi_ekle("ABC Okulu", 30)
+rapor.okul_gezi_ekle("XYZ Şirketi", 15)
+
+# Raporları Görüntüle
+print(rapor.gunluk_rapor())
+print("\n")
+print(rapor.haftalik_rapor())
+
+# Günlük raporu sıfırla (gün sonu)
+rapor.raporu_sifirla()
+print("\nGünlük rapor sıfırlandı!")
+print(rapor.gunluk_rapor())
